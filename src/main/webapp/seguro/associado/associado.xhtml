@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ui:composition template="/layout/layout.xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+
+	<ui:define name="principal">
+
+		<f:event type="preRenderView"
+			listener="#{associadoController.inicializar}" />
+
+		<h:form id="associadoForm">
+			<h:panelGroup id="pesquisa"
+				rendered="#{not associadoController.editar}">
+				<p:panelGrid id="barraBotoesPesquisa" columns="2">
+					<p:commandButton id="novo" value="Novo"
+						action="#{associadoController.novo}" process="@this" update="@form :messages"  >
+					</p:commandButton>
+				
+
+				<p:commandButton id="pesquisar" value="Pesquisar"
+					action="#{associadoController.pesquisar}" process="@form" update="@form :messages"  >
+				</p:commandButton>
+				</p:panelGrid>
+
+				<p:dataTable id="resultados"
+					value="#{associadoController.resultado}" var="linha"
+			emptyMessage="Não possui registros"
+			tableStyleClass="ui-table-columntoggle"
+			style="font-size:12px"
+			paginator="true"
+			rows="10"
+			reflow="true"
+			paginatorTemplate="{CurrentPageReport}
+			{FirstPageLink}
+			{PreviousPageLink} {PageLinks}
+			{NextPageLink} {LastPageLink}
+			{RowsPerPageDropdown}"
+			rowsPerPageTemplate="5,10,15,50">
+			
+					<f:facet name="header">
+						<h:outputText value="Associados" />
+					</f:facet>
+					
+						<p:column  id="idOpcao" resizable="" style="width:35px" >
+						<h:commandLink id="editar" value="Editar"
+							action="#{associadoController.editar(linha.id)}">
+							<f:ajax execute="@this" render="@form :messages" />
+						</h:commandLink>
+						<br />
+						<h:commandLink id="excluir" value="Excluir"
+							action="#{associadoController.remover(linha.id)}"
+							onclick="return confirm('Confirma a exclusção do registro?');">
+							<f:ajax execute="@this" render="@form :messages" />
+						</h:commandLink>
+					</p:column>
+							
+                    <p:column headerText="Código" filterBy="#{linha.id}" sortBy="#{linha.id}" priority="1" style="font-size: 12px; width: 100px;"   >
+						<h:outputText id="código" value="#{linha.id}" style="font-size: 12px; width: 5%;"  />
+					</p:column>
+
+				
+                    <p:column headerText="Nome" filterBy="#{linha.nome}" sortBy="#{linha.nome}" priority="2"  style="font-size:12px;width: 200px;">
+						<h:outputText id="nome" value="#{linha.nome}" style="font-size:12px;width: 200px;"  />
+					</p:column>
+					
+					 <p:column headerText="Documento" filterBy="#{linha.numDocumento}" sortBy="#{linha.numDocumento}"  priority="4"  style="font-size:12px;width: 100px">
+						<h:outputText id="numDocumento" value="#{linha.numDocumento}"  />
+					</p:column>
+					<!-- 
+                    <p:column headerText="Dt.Cadastro" filterBy="#{linha.dataCadastro}" sortBy="#{linha.dataCadastro}" priority="5"  style="font-size:12px;width: 100px">
+						<h:outputText id="datacad" value="#{linha.dataCadastro}" >
+						<f:convertDateTime pattern="dd/MM/yyyy"/> 
+						</h:outputText>
+					</p:column>
+                     -->
+					 <p:column headerText="logradouro" filterBy="#{linha.endereco}" sortBy="#{linha.endereco}" priority="6"  style="font-size:12px;width: 100px">
+						<h:outputText id="logradouro" value="#{linha.endereco}" />
+					</p:column>
+
+					 <p:column headerText="Bairro" filterBy="#{linha.bairro}" sortBy="#{linha.bairro}"  priority="7"  style="font-size:12px;width: 100px">
+						<h:outputText id="bairro" value="#{linha.bairro}" />
+					</p:column>
+
+					<p:column headerText="Cidade" filterBy="#{linha.cidade}" sortBy="#{linha.cidade}" priority="9"  style="font-size:12px;width: 100px">
+						<h:outputText id="cidade" value="#{linha.cidade}" />
+					</p:column>
+					
+					<p:column headerText="CEP" filterBy="#{linha.cep}" sortBy="#{linha.cep}" priority="8"  style="font-size:12px;width: 100px">
+					<h:outputText id="cep" value="#{linha.cep}" />
+					</p:column>
+					
+					<p:column headerText="Telefone" filterBy="#{linha.telefone}" sortBy="#{linha.telefone}" priority="10"  style="font-size:12px;width: 100px">
+						<h:outputText id="telefone" value="#{linha.telefone}" />
+					</p:column>
+
+					<p:column headerText="Email" filterBy="#{linha.email}" sortBy="#{linha.email}" priority="12"  style="font-size:12px;width: 100px">
+						<h:outputText id="email" value="#{linha.email}" />
+					</p:column>
+
+					<p:column headerText="Vencimento" filterBy="#{linha.vencimento}" sortBy="#{linha.vencimento}" priority="13"  style="font-size:12px;width: 100px">
+						<h:outputText id="vencimento" value="#{linha.vencimento}" />
+					</p:column>
+					<!--  
+					<p:column headerText="Renovação" filterBy="#{linha.dataRenovacao}" sortBy="#{linha.vencimento}" priority="14"  style="font-size:12px;width: 100px">
+						<h:outputText id="dataRenovacao" value="#{linha.dataRenovacao}" />
+					</p:column>
+					-->
+			
+
+				</p:dataTable>
+
+			</h:panelGroup>
+
+			<h:panelGroup id="edicao" rendered="#{associadoController.editar}">
+
+
+
+				<p:panelGrid id="camposEdicao" columns="2">
+
+                            
+					<f:facet name="header">
+						<h:outputText value="Cadastro de Associados Filhos da Luz" />
+					</f:facet>
+					
+					<h:outputText id="nomeLabel" value="Nome:" />
+					<p:focus>
+					<h:inputText id="nome" value="#{associadoController.edicao.nome}"
+						size="20" required="true" label="Nome">
+					</h:inputText>
+                    </p:focus>
+                    
+                    <h:outputText id="pessoalabel" value="Tipo Pessoa:" />
+					<p:selectOneMenu id="options"  value="#{associadoController.edicao.pessoa}">
+					<f:selectItem itemLabel="Selecione Um" itemValue="" />
+						<f:selectItem itemLabel="CPF" itemValue="F" />
+						<f:selectItem itemLabel="CNPJ" itemValue="J" />
+						<p:ajax process="@this" update="resultado"/>
+					</p:selectOneMenu>
+					
+               <h:outputText id="cpfcnpjLabel" value="CPF/CNPJ:" />
+                   <p:outputPanel id="resultado">				 
+						<p:inputMask id="campoCPF" mask="999.999.999-99"
+							value="#{associadoController.edicao.numDocumento}"
+							 rendered="#{associadoController.edicao.pessoa eq 'F'}">
+                        </p:inputMask>
+				
+						<p:inputMask id="campoCNJP" mask="99.999.999/9999-99"
+							value="#{associadoController.edicao.numDocumento}"
+							rendered="#{associadoController.edicao.pessoa eq 'J'}"  > 
+							</p:inputMask>
+                   </p:outputPanel>
+
+
+					<h:outputText id="dataCadastrolabel" value="Data do Cadastro :" />
+						<p:calendar id="dataCadastro" locale="pt"
+							value="#{associadoController.edicao.dataCadastro}"
+							pattern="dd/MM/yyyy" showButtonPanel="true" navigator="true"
+							showOn="button" mask="99/99/9999" required="false"
+							label="Data do Cadastro">
+						</p:calendar>
+
+
+
+						<h:outputText id="logradourolabel" value="Logradouro :" />
+						<h:inputText id="logradouro"
+							value="#{associadoController.edicao.endereco}" size="20"
+							required="false" label="Logradouro">
+						</h:inputText>
+
+
+
+						<h:outputText id="bairrolabel" value="Bairro :" />
+						<h:inputText id="bairro"
+							value="#{associadoController.edicao.bairro}" size="20"
+							required="false" label="Bairro">
+						</h:inputText>
+
+
+
+						<h:outputText id="ceplabel" value="CEP :" />
+						<p:inputMask id="cep" value="#{associadoController.edicao.cep}"
+							mask="99999-999" required="false" label="CEP">
+						</p:inputMask>
+
+
+
+						<h:outputText id="cidadelabel" value="Cidade :" />
+						<h:inputText id="cidade"
+							value="#{associadoController.edicao.cidade}" size="20"
+							required="false" label="cidade">
+						</h:inputText>
+
+
+						<h:outputText id="uflabel" value="UF :" />
+						<h:inputText id="uf" value="#{associadoController.edicao.uf}"
+							size="20" required="false" label="uf">
+						</h:inputText>
+
+
+
+						<h:outputText id="telefonelabel" value="Telefone :" />
+						<p:inputMask id="telefone"
+							value="#{associadoController.edicao.telefone}"
+							mask="(99)99999-9999" required="false" label="telefone">
+						</p:inputMask>
+
+
+
+						<h:outputText id="recadolabel" value="Recado :" />
+						<p:inputMask id="recado"
+							value="#{associadoController.edicao.recado}" mask="(99)99999-9999"
+							required="false" label="recado">
+						</p:inputMask>
+
+
+						<h:outputText id="emaillabel" value="EMail:" />
+						<p:inputText id="email"
+							value="#{associadoController.edicao.email}" required="false"
+							requiredMessage="Please enter your email address."
+							validatorMessage="Formato InvÃ¡lido" label="telefone">
+							<f:validateRegex
+								pattern="^[_A-Za-z0-9-\+]+(\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\.[A-Za-z0-9]+)*(\.[A-Za-z]{2,})$" />
+
+						</p:inputText>
+
+
+						<h:outputText id="vencimentolabel" value="Vencimento :" />
+						<h:inputText id="vencimento" size="5" maxlength="2"
+							value="#{associadoController.edicao.vencimento}"
+							required="false" label="vencimento">
+						</h:inputText>
+
+
+
+						<h:outputText id="formacontribuicaolabel"
+							value="Forma de Contribuição :" />
+						<h:inputText id="formacontribuicao"
+							value="#{associadoController.edicao.formaContribuicao}" size="20"
+							required="false" label="formacontribuicao">
+						</h:inputText>
+
+
+
+						<h:outputText id="destinolabel" value="Destino :" />
+						<h:inputText id="destino"
+							value="#{associadoController.edicao.destino}" size="20"
+							required="false" requiredMessage="O campo destino Ã© obrigatório" label="destino">
+						</h:inputText>
+						
+						<h:outputText id="dataRenovacaolabel" value="Data da Renovação :" />
+						<p:calendar id="dataRenovacao" locale="pt"
+							value="#{associadoController.edicao.dataRenovacao}"
+							pattern="dd/MM/yyyy" showButtonPanel="true" navigator="true"
+							showOn="button" mask="99/99/9999" required="false"
+							label="Data da RenovaÃ§Ã£o">
+						</p:calendar>
+
+
+						<h:outputText id="obslabel" value="Observação :" />
+						<h:inputText id="observacao"
+							value="#{associadoController.edicao.observacao}" size="20"
+							required="false" label="observacao">
+						</h:inputText>
+				</p:panelGrid>
+
+
+				<h:panelGrid id="barraBotoesEdicao" columns="2">
+
+					<p:commandButton id="salvar" value="Salvar"
+						action="#{associadoController.salvar}"
+						process="@form" update="@form :messages"
+						style="height: 30px; width: 100px; text-align:center;">
+					</p:commandButton>
+
+					<p:commandButton id="cancelar" value="Cancelar"
+						action="#{associadoController.cancelar}"
+						style="height: 30px; width: 100px; text-align:center;"
+						 process="@this" update="@form" >
+					</p:commandButton>
+
+				</h:panelGrid>
+
+
+			</h:panelGroup>
+
+		</h:form>
+	</ui:define>
+</ui:composition>

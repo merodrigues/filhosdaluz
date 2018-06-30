@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ui:composition template="/layout/layout.xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="principal">
+    
+        <f:event type="preRenderView" listener="#{perfilController.inicializar}"/>
+
+        <h:form id="perfilForm">        
+            <h:panelGroup id="pesquisa" rendered="#{not perfilController.editar}">
+                <p:panelGrid id="barraBotoesPesquisa" columns="1">
+                    <p:commandButton id="novo" value="Novo" action="#{perfilController.novo}"
+                    process="@this" update="@form">
+                    </p:commandButton>
+                </p:panelGrid>
+                
+                <p:panelGrid id="camposPesquisa" columns="3">
+                    <f:facet name="header">
+                        <h:outputText value="Pesquisa"/>
+                    </f:facet>
+                    <h:outputText id="nomePesquisaLabel" value="Nome :"/> 
+                    <p:inputText id="nomePesquisa" value="#{perfilController.pesquisa.nome}" 
+                        size="20" required="false"
+                        label="Nome" >
+                    </p:inputText>
+                    <h:message id="nomePesquisaMensagem" for="nomePesquisa" style="color:red" />
+                </p:panelGrid>
+                
+                <p:commandButton id="pesquisar" value="Pesquisar" action="#{perfilController.pesquisar}"
+                process="@form" update="@form :messages" >
+                </p:commandButton>
+                
+                <p:dataTable id="resultados" value="#{perfilController.resultado}" var="linha"
+                    styleClass="tabela" headerClass="cabecalho" columnClasses="impar,par,impar">
+                    <f:facet name="header">
+                        <h:outputText value="Resultado"/>
+                    </f:facet>
+                    <p:column>
+                        <h:commandLink id="editar" value="Editar" action="#{perfilController.editar(linha.id)}">
+                            <f:ajax execute="@this" render="@form :messages" />
+                        </h:commandLink>
+                        <br/>
+                        <h:commandLink id="excluir" value="Excluir" action="#{perfilController.remover(linha.id)}" 
+                            onclick="return confirm('Confirma a exclusão do registro?');">
+                            <f:ajax execute="@this" render="@form :messages" />
+                        </h:commandLink>
+                    </p:column> 
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="ID"/>
+                        </f:facet>
+                        <h:outputText id="ident" value="#{linha.id}" />
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Nome"/>
+                        </f:facet>
+                        <h:outputText id="nome" value="#{linha.nome}" />
+                    </p:column>
+                </p:dataTable>
+
+            </h:panelGroup>
+            
+            <h:panelGroup id="edicao" rendered="#{perfilController.editar}">
+            
+                <p:panelGrid id="barraBotoesEdicao" columns="2">
+                    <p:commandButton id="salvar" value="Salvar" action="#{perfilController.salvar}"
+                    process="@form" update="@form :messages" >
+                    </p:commandButton>
+                    <p:commandButton id="cancelar" value="Cancelar" action="#{perfilController.cancelar}"
+                     process="@all" update="@form"  >
+                    </p:commandButton>
+                </p:panelGrid>
+                
+                <p:panelGrid id="camposEdicao" columns="3">
+                    <f:facet name="header">
+                        <h:outputText value="Perfil"/>
+                    </f:facet>
+                    <h:outputText id="nomeLabel" value="Nome :"/> 
+                    <p:inputText id="nome" value="#{perfilController.edicao.nome}" 
+                        size="20" required="true"
+                        label="Nome" >
+                    </p:inputText>
+                    <h:message id="nomeMensagem" for="nome" style="color:red" />
+                    <h:outputText id="autorizacaoLabel" value="Autorização :"/> 
+                    <p:selectOneMenu id="autorizacao" value="#{perfilController.autorizacao}">
+                        <f:selectItems value="#{perfilController.autorizacoes}" var="autorizacao" 
+                            itemLabel="#{autorizacao.nome}" itemValue="#{autorizacao.id}" />
+                    </p:selectOneMenu>
+                    <p:commandButton id="incluirAutorizacao" value="Incluir" action="#{perfilController.incluirAutorizacao}"
+                    process="autorizacao" update="autorizacao autorizacoes" >
+                    </p:commandButton>  
+                </p:panelGrid>
+                
+                <p:dataTable id="autorizacoes" value="#{perfilController.edicao.autorizacoes}" var="linha"
+                    styleClass="tabela" headerClass="cabecalho" columnClasses="impar,par,impar">
+                    <f:facet name="header">
+                        <h:outputText value="Autorizações"/>
+                    </f:facet>
+                    <p:column>
+                        <p:commandLink id="excluir" value="Excluir" action="#{perfilController.removerAutorizacao(linha)}" 
+                            onclick="return confirm('Confirma a exclusão do registro?');">
+                            <f:ajax execute="@this" render="@form :messages" />
+                        </p:commandLink>
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Id"/>
+                        </f:facet>
+                        <h:outputText id="id" value="#{linha.id}" />
+                    </p:column>
+                    <p:column>
+                        <f:facet name="header">
+                            <h:outputText value="Nome"/>
+                        </f:facet>
+                        <h:outputText id="nome" value="#{linha.nome}" />
+                    </p:column>
+                </p:dataTable>
+                       
+            </h:panelGroup>
+        </h:form>
+    </ui:define>
+</ui:composition>

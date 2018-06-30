@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ui:composition template="/layout/layout.xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="principal">
+		<f:event type="preRenderView"
+			listener="#{financeiroController.inicializar}" />
+		<h:form id="consultaForm">
+
+<p:panel>
+					<h:panelGrid id="camposDataPesquisa" columns="2">
+					<f:facet name="header">
+						<h:outputText value="Consulta Financeira" />
+					</f:facet>
+					<h:outputText id="dataInicialLabel" value="Data Inicial:" />
+					<p:calendar  id="dataInicial" locale="pt" 
+						value="#{financeiroController.pesquisa.dataInicial}"
+						pattern="dd/MM/yyyy" showButtonPanel="true" navigator="true"
+						showOn="button" mask="99/99/9999" required="false"
+						label="Data Inicial">
+						<p:ajax event="blur" listener="#{financeiroController.dataInicial}" />
+					</p:calendar >
+					
+					
+				<h:outputText id="dataFinalLabel" value="Data Final:" />
+					<p:calendar id="dataFinal" locale="pt"
+						value="#{financeiroController.pesquisa.dataFinal}"
+						pattern="dd/MM/yyyy" showButtonPanel="false" navigator="true"
+						showOn="button" mask="99/99/9999" required="true"
+						label="Data Final">
+						<p:ajax event="blur" listener="#{financeiroController.pesquisa.dataFinal}" />
+					</p:calendar>
+					
+						 
+			 		<h:commandButton id="pesquisar" value="Pesquisar"
+					action="#{financeiroController.pesquisarDatas}">
+					<f:ajax execute="@form" render="@form :messages" />
+				</h:commandButton>	
+				</h:panelGrid>	
+</p:panel>
+
+
+
+<p:dataTable id="tabelaConsulta" 
+			value="#{financeiroController.resultado}"
+			var="consulta"
+			emptyMessage="Não possui registros"
+			paginator="true"
+			rows="10"
+			paginatorTemplate="{CurrentPageReport}
+			{FirstPageLink}
+			{PreviousPageLink} {PageLinks}
+			{NextPageLink} {LastPageLink}
+			{RowsPerPageDropdown}"
+			rowsPerPageTemplate="5,10,15,50">
+			
+						
+		
+			<p:column headerText="Data Vencimento" filterBy="#{consulta.dataVencimento}" sortBy="#{consulta.dataVencimento}">
+					<h:outputText value="#{consulta.dataVencimento}">
+						<f:convertDateTime pattern="dd/MM/yyyy"/>
+					</h:outputText>
+			</p:column>
+			
+		   <p:column headerText="Participante" filterBy="#{consulta.associado.nome}" sortBy="#{consulta.dataVencimento}">
+					<h:outputText value="#{consulta.associado.nome}">
+						
+					</h:outputText>
+			</p:column>
+		
+		
+			<p:column headerText="Tipo da Operação" filterBy="#{consulta.tipoOperacao}" sortBy="#{consulta.tipoOperacao}">
+						<h:outputText id="receita" value="Receita" rendered="#{consulta.tipoOperacao==true}" />
+						<h:outputText id="despesa" value="Despesa" rendered="#{consulta.tipoOperacao==false}" />
+					
+			</p:column>
+			
+			
+			<p:column headerText="Valor" filterBy="#{consulta.valor}" sortBy="#{consulta.valor}">
+					<h:outputText value="#{consulta.valor}">
+						<f:convertNumber minFractionDigits="2" />
+					</h:outputText>
+			</p:column>
+			
+			<f:facet name="footer">
+                       <h:outputText value="Total de Receita R$" />
+                       <h:outputText value="#{financeiroController.retornaEntrada()}" >
+                        <f:convertNumber minFractionDigits="2" />
+                        </h:outputText>        
+                   </f:facet>
+                   
+                   <f:facet name="footer">
+                       <h:outputText value=" Total de Despesas R$" />
+                       <h:outputText value="#{financeiroController.somaSaida}">
+                       <f:convertNumber minFractionDigits="2" />
+                        </h:outputText> 
+                       </f:facet>      
+ 
+                   
+                     <f:facet name="footer">
+                       <h:outputText value=" Caixa R$" />
+                       <h:outputText value="#{financeiroController.totalGeral}" >
+                       <f:convertNumber minFractionDigits="2" />
+                        </h:outputText>                          
+                   </f:facet>
+			
+			
+</p:dataTable>
+
+
+
+
+
+
+
+
+
+		</h:form>
+	</ui:define>
+</ui:composition>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ui:composition template="/layout/layout.xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:f="http://java.sun.com/jsf/core"
+          xmlns:p="http://primefaces.org/ui">
+
+    <ui:define name="principal">
+        <form action="j_spring_security_check" method="post">
+            <h:panelGroup id="login">
+                <h:outputText value="Usuário ou senha incorretos!" rendered="#{param.erro}" style="color: red"/>
+                <h:panelGrid id="camposLogin" columns="2">
+                    <f:facet name="header">
+                        <h:outputText value="Acessar"/>
+                    </f:facet>
+                    <h:outputLabel for="j_username" value="Usuário: * " />  
+                    <h:inputText id="j_username" required="true" label="Usuário" />  
+                    <h:outputLabel for="j_password" value="Senha: * " />  
+                    <h:inputSecret id="j_password" label="Senha" required="true" />
+                    <h:commandButton value="Confirmar"/>
+                </h:panelGrid>
+            </h:panelGroup>
+        </form>
+    </ui:define>
+</ui:composition>

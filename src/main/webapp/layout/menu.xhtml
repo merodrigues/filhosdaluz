@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+xmlns:p="http://primefaces.org/ui">
+    
+    <h:form id="mainMenu">
+        <h:panelGrid id="menu" columns="8">
+        <h:commandLink id="associado" value="Associado" immediate="true"
+	            action="/seguro/associado/associado?faces-redirect=true" 
+	            rendered="#{request.isUserInRole('ROLE_ASSOCIADO')}"/>
+	                <h:commandLink id="financeiro" value="Financeiro" immediate="true"
+	            action="/seguro/financeiro/financeiro?faces-redirect=true" 
+	            rendered="#{request.isUserInRole('ROLE_FINANCEIRO')}"/>
+	                <h:commandLink id="consulta" value="Consulta Financeiro" immediate="true"
+	            action="/seguro/consulta/consulta?faces-redirect=true" 
+	            rendered="#{request.isUserInRole('ROLE_CONSULTA')}"/>
+	      <!--  <h:commandLink id="produto" value="Produto" immediate="true"
+	            action="/seguro/produto/produto?faces-redirect=true" 
+	            rendered="#{request.isUserInRole('ROLE_PRODUTO')}"/>
+	        <h:commandLink id="venda" value="Venda" immediate="true"
+	            action="/seguro/venda/venda?faces-redirect=true" 
+	            rendered="#{request.isUserInRole('ROLE_VENDA')}"/> -->
+	        <h:commandLink id="usuario" value="Usuário" immediate="true" 
+	            action="/seguro/usuario/usuario?faces-redirect=true" 
+	            rendered="#{request.isUserInRole('ROLE_USUARIO')}"/>
+            <h:commandLink id="perfil" value="Perfil" immediate="true"
+                action="/seguro/perfil/perfil?faces-redirect=true"  
+                rendered="#{request.isUserInRole('ROLE_PERFIL')}"/>
+	        <h:commandLink id="login" value="Login" immediate="true" 
+	            action="/login?faces-redirect=true" 
+	            rendered="#{empty request.userPrincipal}"/>
+	        <h:outputText style="text-align: right;" id="usuarioLogado" value="#{request.userPrincipal.name}" 
+	            rendered="#{not empty request.userPrincipal}"/>
+	        <h:outputLink  style="text-align: right;" value="#{facesContext.externalContext.requestContextPath}/logout" 
+	            rendered="#{not empty request.userPrincipal}">
+	            <h:outputText value="Sair"/>
+	        </h:outputLink>
+	    </h:panelGrid>
+    </h:form>
+    
+</ui:composition>

@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<ui:composition template="/layout/layout.xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+	<ui:define name="principal">
+
+		<f:event type="preRenderView"
+			listener="#{financeiroController.inicializar}" />
+
+		<h:form id="financeiroForm">
+			<h:panelGroup id="pesquisa"
+				rendered="#{not financeiroController.editar}">
+				<p:panelGrid id="barraBotoesPesquisa" columns="2">
+					<p:commandButton id="novo" value="Novo"
+						action="#{financeiroController.novo}"  update="@form :messages" process="@form">		
+					</p:commandButton>
+			
+				<p:commandButton id="pesquisar" value="Pesquisar"
+					action="#{financeiroController.pesquisar}" update="@form :messages" process="@form" >
+				</p:commandButton>
+					</p:panelGrid>
+
+		<p:dataTable id="resultados" 
+					value="#{financeiroController.resultado}" var="linha"
+			emptyMessage="Não possui registros"
+			tableStyleClass="ui-table-columntoggle"
+			style="font-size:12px"
+			paginator="true"
+			rows="10"
+			reflow="true"
+			paginatorTemplate="{CurrentPageReport}
+			{FirstPageLink}
+			{PreviousPageLink} {PageLinks}
+			{NextPageLink} {LastPageLink}
+			{RowsPerPageDropdown}"
+			rowsPerPageTemplate="5,10,15,50">
+			
+				<f:facet name="header">
+						<h:outputText value="Financeiro" />
+					</f:facet>
+					
+					<p:column>
+						<h:commandLink id="editar" value="Editar"
+							action="#{financeiroController.editar(linha.id)}"  >
+							<f:ajax execute="@this" render="@form :messages"  />
+						</h:commandLink>
+						<br />
+						<h:commandLink id="excluir" value="Excluir"
+							action="#{financeiroController.remover(linha.id)}"
+						    onclick="return confirm('Confirma a exclusão do registro?');">
+							<f:ajax execute="@this" render="@form :messages" />
+						</h:commandLink>
+					</p:column>
+			
+			<p:column headerText="Código" filterBy="#{linha.id}" sortBy="#{linha.id}">
+			<h:outputText  value="#{linha.id}" />
+		    </p:column>
+		
+					<p:column headerText="Descrição"  filterBy="#{linha.dataVencimento}" sortBy="#linha.descricao}" priority="1"  style="font-size:12px"  >
+						<h:outputText id="descricao" value="#{linha.descricao}" style="font-size:12px;width: 200px" />
+					</p:column>
+
+					<p:column headerText="Operação"  filterBy="#{linha.tipoOperacao}" sortBy="#{linha.tipoOperacao}" priority="3"  style="font-size:12px">
+						<h:outputText id="receita" value="Receita" rendered="#{linha.tipoOperacao==true}" />
+						<h:outputText id="despesa" value="Despesa" rendered="#{linha.tipoOperacao==false}" />
+					</p:column>
+					
+					<p:column headerText="Cadastro"  filterBy="#{linha.dataCadastro}" sortBy="#{linha.dataCadastro}" priority="4"  style="font-size:12px">
+						<h:outputText id="dataCasdastro" value="#{linha.dataCadastro}" >
+						<f:convertDateTime pattern="dd/MM/yyyy"/> 
+						</h:outputText>
+					</p:column>
+					
+					<p:column headerText="Vencimento"  filterBy="#{linha.dataVencimento}" sortBy="#{linha.dataVencimento}"  priority="5"  style="font-size:12px">
+							<h:outputText id="dataVencimento" value="#{linha.dataVencimento}" >
+							<f:convertDateTime pattern="dd/MM/yyyy"/> 
+							</h:outputText>
+					</p:column>
+					
+                    <p:column headerText="Quantidade"  filterBy="#{linha.quantidade}" sortBy="#{linha.quantidade}" priority="6"  style="font-size:12px;width: 100px"> 
+						<h:outputText id="quantidade" value="#{linha.quantidade}" />
+					</p:column>
+
+                  <p:column headerText="Unidade"  filterBy="#{linha.unidade}" sortBy="#{linha.unidade}" priority="7"  style="font-size:12px" >
+						<h:outputText id="unidade" value="#{linha.unidade}" />
+					</p:column>
+
+                        <p:column headerText="Valor"  filterBy="#{linha.valor}" sortBy="#{linha.valor}" priority="8"  style="font-size:12px">
+						<h:outputText id="valor" value="#{linha.valor}" >
+						<f:convertNumber minFractionDigits="2" />
+						</h:outputText>
+					</p:column>
+					
+					
+				  <p:column headerText="Associado"  filterBy="#{linha.associado.nome}" sortBy="#{linha.valor}" priority="8"  style="font-size:12px">
+						<h:outputText id="associado" value="#{linha.associado.nome}" >
+						</h:outputText>
+					</p:column>
+				
+
+				</p:dataTable>
+
+			</h:panelGroup>
+
+			<h:panelGroup id="edicao" rendered="#{financeiroController.editar}">
+
+				<p:panelGrid id="camposEdicao" columns="3">
+					<f:facet name="header">
+						<h:outputText value="Lançamento Financeiro" />
+					</f:facet>
+					
+					<h:outputText id="codigoLabel" value="Código :" />
+					<h:inputText id="codigo" disabled="true"
+						value="#{financeiroController.edicao.id}" size="20"
+						required="true" label="Código">
+					</h:inputText>
+					<h:message id="codigooMensagem" for="codigo" style="color:red" />
+					
+					
+					<h:outputText id="descricaoLabel" value="Descrição :" />
+					<p:focus>
+					<h:inputText id="descricao"
+						value="#{financeiroController.edicao.descricao}" size="20"
+						required="true" label="Descrição">
+					</h:inputText>
+					</p:focus>
+					<h:message id="descricaoMensagem" for="descricao" style="color:red" />
+					
+
+					<h:outputText id="tipoOperacaoLabel" value="Operação :" />
+					<p:selectOneMenu id="tipoOperacao" value="#{financeiroController.edicao.tipoOperacao}" >
+					<f:selectItem itemLabel="Receita" itemValue="true" />
+					<f:selectItem itemLabel="Despesa" itemValue="false" />
+					</p:selectOneMenu>
+					<h:message id="tipoOperacaoMensagem" for="tipoOperacao" style="color:red" />
+					
+						<h:outputText id="favorecidoLabel" value="Participante :" />
+					<p:focus>
+					<p:selectOneMenu id="favorecido"
+						value="#{financeiroController.associado}" size="20"  
+						required="false" label="Favorecido"  >
+					<f:selectItem itemLabel="Selecione um Favorecido" itemValue=""  />
+                    <f:selectItems id="idAssociado" value="#{financeiroController.associados}"  var="associados" 
+                            itemLabel="#{associados.nome}" itemValue="#{associados.id}"  />
+	                 <p:ajax event="blur" listener="#{financeiroController.incluirAssociado}"  ></p:ajax>
+					</p:selectOneMenu>
+					</p:focus>
+					<h:message id="favorecidoMensagem" for="favorecido" style="color:red" />
+ 
+				  <p:commandButton id="incluirAutorizacao" value="Incluir" action="#{financeiroController.incluirAssociado}" rendered="false" >
+                        <f:ajax execute="idAssociado" render="idAssociado" />
+                    </p:commandButton>  
+				
+					<h:outputText id="dataCadastrolabel" value="Dt. Cadastro :" />
+						<p:calendar id="dataCadastro" locale="pt"
+							value="#{financeiroController.edicao.dataCadastro}"
+							pattern="dd/MM/yyyy" showButtonPanel="true" navigator="true"
+							showOn="button" mask="99/99/9999" required="true"
+							label="Data do Cadastro">
+						</p:calendar>
+						<h:message id="dataCadastroMensagem" for="dataCadastro" style="color:red" />
+												
+						<h:outputText id="dataVencimentolabel" value="Vencimento:" />
+						<p:calendar id="dataVencimento" locale="pt"
+							value="#{financeiroController.edicao.dataVencimento}"
+							pattern="dd/MM/yyyy" showButtonPanel="true" navigator="true"
+							showOn="button" mask="99/99/9999" required="true"
+							label="Data do Vencimento">
+						</p:calendar>
+						<h:message id="dataVencimentoMensagem" for="dataVencimento" style="color:red" />
+						
+						<h:outputText id="quantidadeLabel" value="Quantidade :" />
+					<p:inputText  id="quantidade"
+						value="#{financeiroController.edicao.quantidade}" size="20"
+						required="false" label="Quantidade">
+					</p:inputText>
+					<h:message id="quantidadeMensagem" for="quantidade"
+						style="color:red" />
+
+					<h:outputText id="unidadeLabel" value="Unidade :" />
+					<p:inputText  id="unidade"
+						value="#{financeiroController.edicao.unidade}" size="20"
+						required="false" label="Unidade">
+				   </p:inputText>
+					<h:message id="unidadeMensagem" for="unidade" style="color:red" />
+					
+
+					<h:outputText id="valorLabel" value="Valor :" />
+					<p:inputNumber id="valor"
+						value="#{financeiroController.edicao.valor}" size="20"
+						required="true" label="Valor" thousandSeparator="."
+						decimalSeparator="," >				
+					</p:inputNumber>
+					<h:message id="valorMensagem" for="valor" style="color:red" />
+					
+					
+
+				</p:panelGrid>
+
+				<p:panelGrid id="barraBotoesEdicao" columns="2">
+					<p:commandButton id="salvar" value="Salvar"
+						action="#{financeiroController.salvar}"
+						process="@form" update="@form :messages"
+						style="height: 30px; width: 100px; text-align:center;">
+					</p:commandButton>
+					<p:commandButton id="cancelar" value="Cancelar"
+						action="#{financeiroController.cancelar}" process="@this" update="@form"
+						style="height: 30px; width: 100px; text-align:center;">
+					
+					</p:commandButton>
+
+				</p:panelGrid>
+
+			</h:panelGroup>
+
+		</h:form>
+	</ui:define>
+
+</ui:composition>
